@@ -71,3 +71,6 @@ dialog{background:var(--panel);color:var(--ink);border:1px solid var(--g);border
 dialog ol{padding-inline-start:20px;line-height:1.7}
 @media (min-width:700px){.bar select.chip{flex:0 1 220px}.search{max-width:520px;right:auto;left:10px;bottom:90px}.legend{right:auto;max-width:520px;bottom:150px}.fab{bottom:90px}.leaflet-bottom.leaflet-right{margin-bottom:150px}}
 .btn.sm{min-width:44px}#lang{min-width:44px}
+.lg_t{background:none;border:0;color:var(--ink);font:inherit;font-size:12px;min-height:32px;padding:0 4px;cursor:pointer;flex-basis:100%;text-align:start}
+.legend{padding:2px 8px}
+.legend{z-index:650}
