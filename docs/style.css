@@ -56,3 +56,11 @@ bdi{unicode-bidi:isolate}
 .status.unk{background:#3d3410;border:1px solid var(--y)}.status b{display:block}
 *{scrollbar-color:#24594f var(--bg)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.spots a.btn{text-decoration:none;display:inline-flex;align-items:center}
+.chip.on{background:var(--r);color:#fff;border-color:var(--r)}
+.search{position:absolute;z-index:500;left:10px;right:10px;bottom:82px;display:flex;gap:6px}.search input{flex:1;min-height:44px;border-radius:12px;background:rgba(11,31,28,.95);color:var(--ink);border:1px solid #24594f;padding:0 12px}
+.fab{bottom:140px}.leaflet-bottom.leaflet-right{margin-bottom:130px}.legend{bottom:140px}
+.pop{font-family:Tajawal,system-ui,sans-serif;color:#112;min-width:160px}.leaflet-popup-content{margin:10px 12px}
+.leaflet-bottom.leaflet-right{margin-bottom:205px}
+.legend{left:10px;right:76px;bottom:140px;display:flex;flex-wrap:wrap;gap:2px 10px;font-size:11px;padding:6px 10px}
+.legend div{white-space:nowrap}.legend .mut{flex-basis:100%;font-size:11px}
+@media (pointer:coarse){.leaflet-control-zoom{display:none}}

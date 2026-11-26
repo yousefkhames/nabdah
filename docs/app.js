@@ -9,7 +9,7 @@ var T={ar:{sub:'خريطة تغطية الشبكة من الناس، للطوا�
  hh:'تسجيل مسار رحلة',hp:'سجّل مسارك وقوة الشبكة على طول الطريق. شغال من غير نت والبيانات بتتخزن على موبايلك.',start:'ابدأ',stop:'وقف',dl:'نزّل GPX',hc:'قوة الإشارة الحالية (اضغط لتسجيلها)',
  hs:function(n,d){return nf(n)+' نقطة | أطول مسافة بدون شبكة: '+dm(d)},hn:'الموقع بيتسجل طول ما الصفحة مفتوحة. المتصفح بيوقف الـ GPS لما الشاشة تتقفل، فسيبها شغالة.',
  tips:'اتفق مع حد على ميعاد رجوع. نزّل خريطة أوفلاين. وفّر البطارية. الشبكة غالباً أحسن على القمم والأماكن المفتوحة.',
- sent:'اتسجل، شكراً ليك!',updated:'اتحدّث تسجيلك لنفس المكان النهاردة',pick:'اختار قوة الإشارة الأول',mine:'تسجيلاتي',del:'امسح',nomine:'لسه ما سجلتش حاجة.',deleted:'اتمسح',hasSig:'عندك إشارة. اتصل بـ 112 دلوقتي',noSig:'مفيش إشارة عندك. امشي ناحية أقرب إشارة',walk:'مشي حوالي',min:'دقيقة',nav:'اتجاهات',none:'مفيش مكان معروف فيه شبكة قريب. سجّل لو عندك.',copied:'اتنسخت الرسالة',unk:'مفيش بيانات عن المكان ده. جرّب تتصل بـ 112 على أي حال',nodata:'مفيش تسجيلات هنا',share:'شارك',locFail:'مش قادر أحدد مكانك. فعّل خدمة الموقع وجرّب تاني.',demo:'بيانات تجريبية للعرض فقط',cnt:'تسجيل',avg:'متوسط'},
+ sent:'اتسجل، شكراً ليك!',zeroR:'تسجيل بدون شبكة',conf:'درجة الثقة',c_high:'عالية',c_medium:'متوسطة',c_low:'ضعيفة (تسجيل واحد)',dead:'المناطق الميتة بس',search:'دوّر على مكان',searchGo:'روح',nf404:'مش لاقي المكان ده',updated:'اتحدّث تسجيلك لنفس المكان النهاردة',pick:'اختار قوة الإشارة الأول',mine:'تسجيلاتي',del:'امسح',nomine:'لسه ما سجلتش حاجة.',deleted:'اتمسح',hasSig:'عندك إشارة. اتصل بـ 112 دلوقتي',noSig:'مفيش إشارة عندك. امشي ناحية أقرب إشارة',walk:'مشي حوالي',min:'دقيقة',nav:'اتجاهات',none:'مفيش مكان معروف فيه شبكة قريب. سجّل لو عندك.',copied:'اتنسخت الرسالة',unk:'مفيش بيانات عن المكان ده. جرّب تتصل بـ 112 على أي حال',nodata:'مفيش تسجيلات هنا',share:'شارك',locFail:'مش قادر أحدد مكانك. فعّل خدمة الموقع وجرّب تاني.',demo:'بيانات تجريبية للعرض فقط',cnt:'تسجيل',avg:'متوسط'},
 en:{sub:'Crowdsourced network coverage for emergencies and hiking',map:'Map',report:'Report',sos:'Emergency',hike:'Trail',
  all:'All carriers',here:'You: ',nosig:'No signal',locate:'Locate me',leg:['No service','Weak','Fair','Good','Excellent'],
  rh:'Report signal here',rb:'Signal strength now',rc:'Carrier',rn:'Network',rw:'Where',out:['Outdoors','Inside a building'],nets:['None','Emergency only (SOS)','2G','3G','4G','5G'],
@@ -19,7 +19,7 @@ en:{sub:'Crowdsourced network coverage for emergencies and hiking',map:'Map',rep
  hh:'Record a trail',hp:'Log your route and signal along the way. Works offline, stored on your phone.',start:'Start',stop:'Stop',dl:'Download GPX',hc:'Current signal (tap to log it)',
  hs:function(n,d){return n+' points | longest dead stretch: '+dm(d)},hn:'Location logs while the page is open. Browsers pause GPS when the screen locks.',
  tips:'Agree a return time with someone. Download an offline map. Save battery. Signal is usually better on ridges and open lines of sight.',
- sent:'Saved. Thank you!',updated:'Updated your report for this spot today',pick:'Pick a signal strength first',mine:'My reports',del:'Delete',nomine:'No reports yet.',deleted:'Deleted',hasSig:'You have signal. Call 112 now',noSig:'No signal here. Walk toward the nearest signal',walk:'about',min:'min walk',nav:'Directions',none:'No known signal nearby. Report one if you have it.',copied:'Message copied',unk:'No data for this spot. Try calling 112 anyway',nodata:'No reports here',share:'Share',locFail:'Could not get your location. Turn on location.',demo:'Demo data for showcase',cnt:'reports',avg:'avg'}};
+ sent:'Saved. Thank you!',zeroR:'reports with no service',conf:'Confidence',c_high:'high',c_medium:'medium',c_low:'low (single report)',dead:'Dead zones only',search:'Search a place',searchGo:'Go',nf404:'Place not found',updated:'Updated your report for this spot today',pick:'Pick a signal strength first',mine:'My reports',del:'Delete',nomine:'No reports yet.',deleted:'Deleted',hasSig:'You have signal. Call 112 now',noSig:'No signal here. Walk toward the nearest signal',walk:'about',min:'min walk',nav:'Directions',none:'No known signal nearby. Report one if you have it.',copied:'Message copied',unk:'No data for this spot. Try calling 112 anyway',nodata:'No reports here',share:'Share',locFail:'Could not get your location. Turn on location.',demo:'Demo data for showcase',cnt:'reports',avg:'avg'}};
 var lang=LS.nb_lang||'ar', TT=function(){return T[lang]};
 var COL=['#ff5d5d','#ff9f43','#f4d35e','#9be564','#2ee6a6'];
 function $(i){return document.getElementById(i)}
@@ -40,15 +40,17 @@ function dm(m){return m<1000?nf(Math.round(m))+(lang==='ar'?' متر':' m'):nf((
 var DIR_AR={N:'شمال',NE:'شمال شرق',E:'شرق',SE:'جنوب شرق',S:'جنوب',SW:'جنوب غرب',W:'غرب',NW:'شمال غرب'};
 function cmp(deg){var d=C.compass(deg);return lang==='ar'?DIR_AR[d]:d}
 function ltr(s){return '<bdi dir="ltr">'+s+'</bdi>'}
-var DEMO=seed(), mine=JSON.parse(LS.nb_mine||'[]'), remote=null, pos=null, cells=[];
+var deadOnly=false;var DEMO=seed(), mine=JSON.parse(LS.nb_mine||'[]'), remote=null, pos=null, cells=[];
 function all(){return DEMO.concat(mine,remote||[])}
-function refresh(){cells=C.aggregate(all(),{carrier:$('carrier').value});draw();here();if(window.summ)summ();sos()}
+function refresh(){cells=C.aggregate(all(),{carrier:$('carrier').value});if(deadOnly)cells=cells.filter(function(c){return c.avg<1.5});draw();here();if(window.summ)summ();sos()}
 var map=L.map('map',{zoomControl:false}).setView([30.9,29.8],8);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap',maxZoom:18}).addTo(map);
 L.control.zoom({position:'bottomright'}).addTo(map);var layer=L.layerGroup().addTo(map),me=null;
+function popup(c,b){var l=TT(),cs=Object.keys(c.carriers).map(function(k){return k+' '+nf(c.carriers[k])}).join(' | ');
+ return '<div class="pop"><b>'+barsSvg(b)+' '+l.leg[b]+'</b><br>'+nf(c.n)+' '+l.cnt+' | '+l.avg+' '+nf(c.avg.toFixed(1))+'<br><span dir="ltr">'+cs+'</span><br>'+(c.zero?nf(c.zero)+' '+l.zeroR+'<br>':'')+l.conf+': '+l['c_'+c.confidence]+'</div>'}
 function draw(){layer.clearLayers();var h=C.CELL/2,z=map.getZoom(),b2=map.getBounds().pad(.2);cells.forEach(function(c){if(!b2.contains([c.lat,c.lon]))return;var b=Math.max(0,Math.min(4,Math.round(c.avg))),o={stroke:false,fillColor:COL[b],fillOpacity:c.confidence==='low'?.4:.7},m;
  m=z>=14?L.rectangle([[c.lat-h,c.lon-h],[c.lat+h,c.lon+h]],o):L.circleMarker([c.lat,c.lon],Object.assign({radius:z<10?3:z<12?5:7},o));
- m.bindPopup(barsSvg(b)+'<br>'+TT().leg[b]+'<br>'+nf(c.n)+' '+TT().cnt+' | '+TT().avg+' '+nf(c.avg.toFixed(1))).addTo(layer)})}
+ m.bindPopup(popup(c,b)).addTo(layer)})}
 map.on('zoomend moveend',function(){draw();summ()});window.summ=summ;function summ(){var b=map.getBounds(),n=[0,0,0,0,0],t=0;cells.forEach(function(c){if(b.contains([c.lat,c.lon])){n[Math.max(0,Math.min(4,Math.round(c.avg)))]++;t++}});$('summary').textContent=t?(lang==='ar'?'في الشاشة: ':'In view: ')+nf(t)+' | '+TT().leg[0]+' '+nf(n[0])+' | '+TT().leg[4]+' '+nf(n[4]):''}
 var q=location.hash.slice(1).split(',');var at=location.hash.indexOf('@');if(at>0){var pp=location.hash.slice(at+1).split(',');pos={lat:+pp[0],lon:+pp[1]}}if(q.length===3)map.setView([+q[0],+q[1]],+q[2]);
 function here(){var el=$('here');if(!pos){el.textContent=TT().locate;return}var s=C.signalAt(pos,cells);el.innerHTML=TT().here+(s?barsSvg(Math.round(s.cell.avg)):TT().nosig);}
@@ -60,7 +62,7 @@ var cur=-1,hcur=-1;
 function mkBars(id,cb){var b=$(id);b.innerHTML='';for(var i=0;i<5;i++)(function(i){var x=document.createElement('button');x.setAttribute('role','radio');x.setAttribute('aria-checked','false');x.innerHTML=barsSvg(i)+'<span class="lbl"></span>';x.onclick=function(){cb(i)};b.appendChild(x)})(i)}
 function labels(){['bars','h_bars'].forEach(function(id){[].forEach.call($(id).children,function(b,i){b.lastChild.textContent=TT().leg[i]})});[].forEach.call($('bars').children,function(b,i){b.classList.toggle('on',i===cur);b.setAttribute('aria-checked',i===cur)})}
 function fillSel(id,arr,keep){var e=$(id),v=e.value;e.innerHTML='';arr.forEach(function(x,i){var o=document.createElement('option');o.value=x[0];o.textContent=x[1];e.appendChild(o)});if(keep&&v)e.value=v}
-function text(){var l=TT();$('t_sub').textContent=l.sub;var nb=document.querySelectorAll('#nav .tl');['map','report','sos','hike'].forEach(function(k,i){nb[i].textContent=l[k]});$('skip').textContent=lang==='ar'?'تخطي للمحتوى':'Skip to content';$('fab').setAttribute('aria-label',l.locate);
+function text(){var l=TT();$('t_sub').textContent=l.sub;var nb=document.querySelectorAll('#nav .tl');['map','report','sos','hike'].forEach(function(k,i){nb[i].textContent=l[k]});$('dead').textContent=l.dead;$('q').placeholder=l.search;$('q').setAttribute('aria-label',l.search);$('q_go').textContent=l.searchGo;$('skip').textContent=lang==='ar'?'تخطي للمحتوى':'Skip to content';$('fab').setAttribute('aria-label',l.locate);
  fillSel('carrier',[['all',l.all]].concat(C.CARRIERS.map(function(c){return[c,c]})),1);fillSel('r_carrier',C.CARRIERS.map(function(c){return[c,c]}),1);
  fillSel('r_nettype',l.nets.map(function(n,i){return[['none','sos','2G','3G','4G','5G'][i],n]}),1);if(!$('r_nettype').dataset.i){$('r_nettype').value=guessNet()||'4G';$('r_nettype').dataset.i=1}fillSel('r_out',[['1',l.out[0]],['0',l.out[1]]],1);
  $('r_h').textContent=l.rh;$('r_bars').textContent=l.rb;$('r_car').textContent=l.rc;$('r_net').textContent=l.rn;$('r_where').textContent=l.rw;$('send').textContent=l.send;$('r_priv').textContent=l.priv;
@@ -73,6 +75,8 @@ $('lang').onclick=function(){lang=lang==='ar'?'en':'ar';LS.nb_lang=lang;text();d
 document.querySelectorAll('#nav button').forEach(function(b){b.onclick=function(){document.querySelectorAll('#nav button').forEach(function(x){x.classList.toggle('on',x===b);x.setAttribute('aria-selected',x===b)});['map','report','sos','hike'].forEach(function(k){$(k+'_s').classList.toggle('on',k===b.dataset.s)});
  if(b.dataset.s==='map')setTimeout(function(){map.invalidateSize()},50);if(b.dataset.s==='report'||b.dataset.s==='sos')locate(false)}});
 $('carrier').onchange=refresh;
+$('dead').onclick=function(){deadOnly=!deadOnly;$('dead').setAttribute('aria-pressed',deadOnly);$('dead').classList.toggle('on',deadOnly);refresh()};
+$('q_form').onsubmit=function(e){e.preventDefault();var v=$('q').value.trim();if(!v)return;fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(v)+'&accept-language='+lang).then(function(r){return r.json()}).then(function(j){if(!j.length){toast(TT().nf404);return}map.setView([+j[0].lat,+j[0].lon],13)}).catch(function(){toast(TT().nf404)})};
 mkBars('bars',function(i){cur=i;labels()});
 $('send').onclick=function(){if(!pos){locate(false);toast(TT().locFail);return}if(cur<0){toast(TT().pick);$('bars').firstChild.focus();return}
  var r=C.cleanReading({lat:pos.lat,lon:pos.lon,bars:cur,carrier:$('r_carrier').value,net:cur===0?($('r_nettype').value==='sos'?'sos':'none'):$('r_nettype').value,outdoor:$('r_out').value==='1'});
