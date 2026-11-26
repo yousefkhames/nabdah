@@ -29,7 +29,7 @@ function barsSvg(n){var s='<svg width="34" height="24" viewBox="0 0 34 24">';for
 function seed(){var s=7,rnd=function(){s=(s*16807)%2147483647;return s/2147483647},out=[],cars=['Vodafone','Orange','Etisalat','WE'];
  function area(lat,lon,rad,n,fn){for(var i=0;i<n;i++){var la=lat+(rnd()-.5)*rad,lo=lon+(rnd()-.5)*rad;var b=Math.max(0,Math.min(4,Math.round(fn(la,lo)+(rnd()-.5)*1.2)));
   out.push({lat:la,lon:lo,bars:b,carrier:cars[Math.floor(rnd()*4)],net:b?'4G':'none',outdoor:true,t:new Date(Date.now()-rnd()*60*86400000).toISOString().slice(0,10)})}}
- area(31.2,29.92,.14,260,function(){return 3.4});
+ [[31.2155,29.9455],[31.2440,29.9900],[31.1855,29.9070],[31.2130,29.9320],[31.2480,29.9800],[31.2230,29.9600],[31.2330,29.9780]].forEach(function(p){area(p[0],p[1],.006,34,function(){return 3.4})});
  for(var i=0;i<140;i++){var f=rnd(),la=31.0-f*.7,lo=29.75-f*.6+(rnd()-.5)*.02,b=(f>.15&&f<.85)?(rnd()<.55?0:1):3;out.push({lat:la,lon:lo,bars:b,carrier:cars[Math.floor(rnd()*4)],net:b?'3G':'none',outdoor:true,t:new Date(Date.now()-rnd()*60*86400000).toISOString().slice(0,10)})}
  area(28.56,33.95,.25,180,function(la,lo){return 1.2+Math.max(0,(0.05-Math.abs(la-28.556))*40)});
  area(29.2,25.52,.16,60,function(){return 2.4});
