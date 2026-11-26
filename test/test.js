@@ -8,6 +8,16 @@ assert.strictEqual(cells.length, 2); assert.ok(Math.abs(cells.find(c => c.n === 
 const n = core.nearestSignal({ lat: 31.3, lon: 29.9 }, cells, 2); assert.ok(n && Math.round(n.d / 1000) === 11 && core.compass(n.bearing) === 'S');
 assert.strictEqual(core.deadStretch([{ lat: 0, lon: 0, bars: 0 }, { lat: 0, lon: 0.001, bars: 0 }, { lat: 0, lon: 0.002, bars: 3 }]), 111);
 assert.ok(core.toGPX([{ lat: 1, lon: 2, ts: 0, bars: 1 }]).includes('<trkpt'));
+// weighting, trimming, best carrier, dms
+(function(){
+  const now=Date.now(), t=new Date(now).toISOString();
+  const mk=(b,car,out)=>({lat:31.2,lon:29.9,bars:b,carrier:car,t,outdoor:out!==false});
+  let c=core.aggregate([mk(4,'WE',true),mk(0,'WE',false)],{},now)[0]; assert.ok(c.avg>2.4&&c.avg<2.6,'indoor weighs 0.6: '+c.avg);
+  c=core.aggregate([mk(0,'WE'),mk(3,'WE'),mk(3,'WE'),mk(3,'WE'),mk(4,'WE')],{},now)[0]; assert.strictEqual(c.avg,3,'outliers trimmed');
+  c=core.aggregate([mk(1,'WE'),mk(1,'WE'),mk(3,'Orange'),mk(4,'Orange'),mk(4,'Vodafone')],{},now)[0];
+  const bc=core.bestCarrier(c); assert.strictEqual(bc.carrier,'Orange','best carrier needs 2+ reports'); 
+  assert.strictEqual(core.dms(31.5,-29.25),"31\u00b030'0.0\"N 29\u00b015'0.0\"W"); console.log('weighting tests passed');
+})();
 // server
 const { createServer } = require('../server/server.js'); process.env.NABDAH_DATA = '/tmp/nabdah-test.json';
 const s = createServer().listen(0, async () => {

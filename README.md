@@ -18,7 +18,7 @@ When there is no signal, the first question is "where is the nearest place with 
 
 ## Features
 - **Coverage map**: colour-coded cells from no service to excellent, carrier filter, dead-zone filter, place search, detail popup with carrier breakdown and confidence.
-- **Two-tap reporting**: one report per spot, carrier and day. Review, delete, export, import or erase your own reports.
+- **Two-tap reporting** plus a one-tap "no signal here" button: one report per spot, carrier and day. Readings are weighted by age and indoor/outdoor, outliers are trimmed, and popups name the best carrier once two or more reports back it. Review, delete, export, import or erase your own reports.
 - **Emergency tab**: tells you if you have signal, shows the three nearest spots with signal (distance, compass direction, walking time, walking directions), prepares a message with your coordinates and battery level, and shares it by SMS or the share sheet. One-tap numbers for Egypt: 112, 122, 123.
 - **Trail tab**: record a route offline, tag signal along it, see your longest dead stretch, export GPX.
 - **Route check**: load a GPX file of a planned hike and see which parts of it have signal and where it drops (processed on your device).

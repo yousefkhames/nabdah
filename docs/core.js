@@ -42,17 +42,32 @@
     var cells = {};
     readings.forEach(function (r) {
       if (filter.carrier && filter.carrier !== 'all' && r.carrier !== filter.carrier) return;
-      var k = cellKey(r.lat, r.lon), c = cells[k] || (cells[k] = { lat: snap(r.lat), lon: snap(r.lon), w: 0, s: 0, n: 0, zero: 0, carriers: {} });
+      var k = cellKey(r.lat, r.lon), c = cells[k] || (cells[k] = { lat: snap(r.lat), lon: snap(r.lon), items: [], zero: 0, carriers: {} });
       var age = Math.max(0, (now - new Date(r.t).getTime()) / 86400000);
-      var w = Math.pow(0.5, age / 120);
-      c.w += w; c.s += w * r.bars; c.n++; if (r.bars === 0) c.zero++;
+      var w = Math.pow(0.5, age / 120) * (r.outdoor === false ? 0.6 : 1); // indoor readings count less
+      c.items.push({ b: r.bars, w: w, car: r.carrier }); if (r.bars === 0) c.zero++;
       c.carriers[r.carrier] = (c.carriers[r.carrier] || 0) + 1;
     });
     return Object.keys(cells).map(function (k) {
-      var c = cells[k]; c.avg = c.s / c.w;
+      var c = cells[k], it = c.items.slice();
+      if (it.length >= 5) { it.sort(function (a, b) { return a.b - b.b; }); it = it.slice(1, -1); } // trim one outlier each side
+      var s = 0, w = 0, per = {};
+      it.forEach(function (x) { s += x.w * x.b; w += x.w; var p = per[x.car] || (per[x.car] = { s: 0, w: 0, n: 0 }); p.s += x.w * x.b; p.w += x.w; p.n++; });
+      c.n = c.items.length; c.avg = w ? s / w : 0;
+      c.byCarrier = {}; Object.keys(per).forEach(function (k2) { c.byCarrier[k2] = { avg: per[k2].s / per[k2].w, n: per[k2].n }; });
       c.confidence = c.n >= 5 ? 'high' : c.n >= 2 ? 'medium' : 'low';
-      return c;
+      delete c.items; return c;
     });
+  }
+  /* Best carrier in a cell: needs >= 2 reports per carrier to be named. */
+  function bestCarrier(cell) {
+    var best = null;
+    Object.keys(cell.byCarrier || {}).forEach(function (k) { var p = cell.byCarrier[k]; if (p.n >= 2 && (!best || p.avg > best.avg)) best = { carrier: k, avg: p.avg, n: p.n }; });
+    return best;
+  }
+  function dms(lat, lon) {
+    function f(v, p, n) { var a = Math.abs(v), d = Math.floor(a), m = Math.floor((a - d) * 60), s = ((a - d) * 60 - m) * 60; return d + '\u00b0' + m + "'" + s.toFixed(1) + '"' + (v >= 0 ? p : n); }
+    return f(lat, 'N', 'S') + ' ' + f(lon, 'E', 'W');
   }
   /* Nearest cell with usable signal (avg >= min) from a position. */
   function nearestSignal(pos, cells, min) {
@@ -112,6 +127,6 @@
     });
     return { samples: out, total: out.length, covered: cov, unknown: unk, dead: dead, longestDead: longest * step };
   }
-  return { parseGPX: parseGPX, routeCoverage: routeCoverage, CELL: CELL, snap: snap, cellKey: cellKey, dist: dist, bearing: bearing, compass: compass, CARRIERS: CARRIERS,
+  return { bestCarrier: bestCarrier, dms: dms, parseGPX: parseGPX, routeCoverage: routeCoverage, CELL: CELL, snap: snap, cellKey: cellKey, dist: dist, bearing: bearing, compass: compass, CARRIERS: CARRIERS,
     cleanReading: cleanReading, aggregate: aggregate, nearestSignal: nearestSignal, signalAt: signalAt, toGPX: toGPX, deadStretch: deadStretch };
 });
