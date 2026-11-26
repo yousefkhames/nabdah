@@ -36,25 +36,25 @@ function seed(){var s=7,rnd=function(){s=(s*16807)%2147483647;return s/214748364
  return out.map(C.cleanReading)}
 var DEMO=seed(), mine=JSON.parse(LS.nb_mine||'[]'), remote=null, pos=null, cells=[];
 function all(){return DEMO.concat(mine,remote||[])}
-function refresh(){cells=C.aggregate(all(),{carrier:$('carrier').value});draw();here()}
+function refresh(){cells=C.aggregate(all(),{carrier:$('carrier').value});draw();here();if(window.summ)summ()}
 var map=L.map('map',{zoomControl:false}).setView([30.9,29.8],8);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap',maxZoom:18}).addTo(map);
 L.control.zoom({position:'bottomright'}).addTo(map);var layer=L.layerGroup().addTo(map),me=null;
 function draw(){layer.clearLayers();var h=C.CELL/2,z=map.getZoom(),b2=map.getBounds().pad(.2);cells.forEach(function(c){if(!b2.contains([c.lat,c.lon]))return;var b=Math.max(0,Math.min(4,Math.round(c.avg))),o={stroke:false,fillColor:COL[b],fillOpacity:c.confidence==='low'?.4:.7},m;
  m=z>=14?L.rectangle([[c.lat-h,c.lon-h],[c.lat+h,c.lon+h]],o):L.circleMarker([c.lat,c.lon],Object.assign({radius:z<10?3:z<12?5:7},o));
  m.bindPopup(barsSvg(b)+'<br>'+TT().leg[b]+'<br>'+c.n+' '+TT().cnt+' | '+TT().avg+' '+c.avg.toFixed(1)).addTo(layer)})}
-map.on('zoomend moveend',draw);
+map.on('zoomend moveend',function(){draw();summ()});window.summ=summ;function summ(){var b=map.getBounds(),n=[0,0,0,0,0],t=0;cells.forEach(function(c){if(b.contains([c.lat,c.lon])){n[Math.max(0,Math.min(4,Math.round(c.avg)))]++;t++}});$('summary').textContent=t?(lang==='ar'?'في الشاشة: ':'In view: ')+t+' | '+TT().leg[0]+' '+n[0]+' | '+TT().leg[4]+' '+n[4]:''}
 var q=location.hash.slice(1).split(',');if(q.length===3)map.setView([+q[0],+q[1]],+q[2]);
 function here(){var el=$('here');if(!pos){el.textContent=TT().locate;return}var s=C.signalAt(pos,cells);el.innerHTML=TT().here+(s?barsSvg(Math.round(s.cell.avg)):TT().nosig);}
-$('here').onclick=function(){locate(true)};
+$('here').onclick=$('fab').onclick=function(){locate(true)};
 function locate(fly){if(!navigator.geolocation){toast(TT().locFail);return}navigator.geolocation.getCurrentPosition(function(p){pos={lat:p.coords.latitude,lon:p.coords.longitude};
  if(me)map.removeLayer(me);me=L.circleMarker([pos.lat,pos.lon],{radius:8,color:'#fff',fillColor:'#2d8cff',fillOpacity:1}).addTo(map);if(fly)map.setView([pos.lat,pos.lon],14);here();sos();upPos()},function(){toast(TT().locFail)},{enableHighAccuracy:true,timeout:15000})}
 /* UI */
 var cur=-1,hcur=-1;
-function mkBars(id,cb){var b=$(id);b.innerHTML='';for(var i=0;i<5;i++)(function(i){var x=document.createElement('button');x.innerHTML=barsSvg(i)+'<span class="lbl"></span>';x.onclick=function(){cb(i)};b.appendChild(x)})(i)}
-function labels(){['bars','h_bars'].forEach(function(id){[].forEach.call($(id).children,function(b,i){b.lastChild.textContent=TT().leg[i]})});[].forEach.call($('bars').children,function(b,i){b.classList.toggle('on',i===cur)})}
+function mkBars(id,cb){var b=$(id);b.innerHTML='';for(var i=0;i<5;i++)(function(i){var x=document.createElement('button');x.setAttribute('role','radio');x.setAttribute('aria-checked','false');x.innerHTML=barsSvg(i)+'<span class="lbl"></span>';x.onclick=function(){cb(i)};b.appendChild(x)})(i)}
+function labels(){['bars','h_bars'].forEach(function(id){[].forEach.call($(id).children,function(b,i){b.lastChild.textContent=TT().leg[i]})});[].forEach.call($('bars').children,function(b,i){b.classList.toggle('on',i===cur);b.setAttribute('aria-checked',i===cur)})}
 function fillSel(id,arr,keep){var e=$(id),v=e.value;e.innerHTML='';arr.forEach(function(x,i){var o=document.createElement('option');o.value=x[0];o.textContent=x[1];e.appendChild(o)});if(keep&&v)e.value=v}
-function text(){var l=TT();$('t_sub').textContent=l.sub;var nb=document.querySelectorAll('#nav button');['map','report','sos','hike'].forEach(function(k,i){nb[i].textContent=l[k]});
+function text(){var l=TT();$('t_sub').textContent=l.sub;var nb=document.querySelectorAll('#nav .tl');['map','report','sos','hike'].forEach(function(k,i){nb[i].textContent=l[k]});$('skip').textContent=lang==='ar'?'تخطي للمحتوى':'Skip to content';$('fab').setAttribute('aria-label',l.locate);
  fillSel('carrier',[['all',l.all]].concat(C.CARRIERS.map(function(c){return[c,c]})),1);fillSel('r_carrier',C.CARRIERS.map(function(c){return[c,c]}),1);
  fillSel('r_nettype',l.nets.map(function(n,i){return[['none','sos','2G','3G','4G','5G'][i],n]}),1);if(!$('r_nettype').dataset.i){$('r_nettype').value='4G';$('r_nettype').dataset.i=1}fillSel('r_out',[['1',l.out[0]],['0',l.out[1]]],1);
  $('r_h').textContent=l.rh;$('r_bars').textContent=l.rb;$('r_car').textContent=l.rc;$('r_net').textContent=l.rn;$('r_where').textContent=l.rw;$('send').textContent=l.send;$('r_priv').textContent=l.priv;
@@ -64,7 +64,7 @@ function text(){var l=TT();$('t_sub').textContent=l.sub;var nb=document.querySel
  document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';$('lang').textContent=lang==='ar'?'EN':'ع';$('t_title').firstChild.textContent=lang==='ar'?'نبضة':'Nabdah';labels();upPos();hs();here();sos()}
 function upPos(){$('r_pos').textContent=pos?pos.lat.toFixed(3)+', '+pos.lon.toFixed(3)+' ('+TT().rw+')':TT().pos}
 $('lang').onclick=function(){lang=lang==='ar'?'en':'ar';LS.nb_lang=lang;text();draw()};
-document.querySelectorAll('#nav button').forEach(function(b){b.onclick=function(){document.querySelectorAll('#nav button').forEach(function(x){x.classList.toggle('on',x===b)});['map','report','sos','hike'].forEach(function(k){$(k+'_s').classList.toggle('on',k===b.dataset.s)});
+document.querySelectorAll('#nav button').forEach(function(b){b.onclick=function(){document.querySelectorAll('#nav button').forEach(function(x){x.classList.toggle('on',x===b);x.setAttribute('aria-selected',x===b)});['map','report','sos','hike'].forEach(function(k){$(k+'_s').classList.toggle('on',k===b.dataset.s)});
  if(b.dataset.s==='map')setTimeout(function(){map.invalidateSize()},50);if(b.dataset.s==='report'||b.dataset.s==='sos')locate(false)}});
 $('carrier').onchange=refresh;
 mkBars('bars',function(i){cur=i;labels()});
