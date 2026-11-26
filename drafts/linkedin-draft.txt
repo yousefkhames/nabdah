@@ -1,4 +1,0 @@
-Built Nabdah (نبضة): a free, Arabic-first crowdsourced coverage map for emergencies and hiking.
-Report your signal in two taps, see the nearest place with signal when you have none, check a hike route for dead stretches, record trails offline. Reports are snapped to a ~275 m grid, no accounts.
-Demo data for now; it gets real as people report.
-Live: https://yousefkhames.github.io/nabdah/ | Code: https://github.com/yousefkhames/nabdah
