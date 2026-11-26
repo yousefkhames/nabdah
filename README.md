@@ -13,6 +13,15 @@
 <img src="assets/mobile-map-en.png" width="23%" alt="Coverage map, English">
 </p>
 
+## Screenshots
+
+Captured from the live site (https://yousefkhames.github.io/nabdah/).
+
+<p>
+  <img src="docs/screenshots/live-desktop.png" alt="nabdah desktop view" width="640">
+  <img src="docs/screenshots/live-mobile.png" alt="nabdah mobile view" width="200">
+</p>
+
 ## Why
 When there is no signal, the first question is "where is the nearest place with signal?". Existing coverage maps are built around carrier marketing or tower databases. Nabdah is built around people: you report the bars you actually have, and the map, the emergency screen and the trail checker work from those reports.
 
