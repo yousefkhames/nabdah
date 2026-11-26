@@ -74,7 +74,7 @@ function upPos(){$('r_pos').textContent=pos?pos.lat.toFixed(3)+', '+pos.lon.toFi
 $('lang').onclick=function(){lang=lang==='ar'?'en':'ar';LS.nb_lang=lang;text();draw()};
 document.querySelectorAll('#nav button').forEach(function(b){b.onclick=function(){document.querySelectorAll('#nav button').forEach(function(x){x.classList.toggle('on',x===b);x.setAttribute('aria-selected',x===b)});['map','report','sos','hike'].forEach(function(k){$(k+'_s').classList.toggle('on',k===b.dataset.s)});
  if(b.dataset.s==='map')setTimeout(function(){map.invalidateSize()},50);if(b.dataset.s==='report'||b.dataset.s==='sos')locate(false)}});
-$('carrier').onchange=refresh;
+$('carrier').onchange=function(){LS.nb_car=$('carrier').value;refresh()};$('r_carrier').onchange=function(){LS.nb_rcar=$('r_carrier').value};
 $('dead').onclick=function(){deadOnly=!deadOnly;$('dead').setAttribute('aria-pressed',deadOnly);$('dead').classList.toggle('on',deadOnly);refresh()};
 $('q_form').onsubmit=function(e){e.preventDefault();var v=$('q').value.trim();if(!v)return;fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(v)+'&accept-language='+lang).then(function(r){return r.json()}).then(function(j){if(!j.length){toast(TT().nf404);return}map.setView([+j[0].lat,+j[0].lon],13)}).catch(function(){toast(TT().nf404)})};
 mkBars('bars',function(i){cur=i;labels()});
@@ -127,5 +127,5 @@ $('wipe').onclick=function(){if(confirm(TT().wipeQ)){mine=[];LS.removeItem('nb_m
 $('h_dl').onclick=function(){if(!track.length)return;var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([C.toGPX(track,'Nabdah trail')],{type:'application/gpx+xml'}));a.download='nabdah-trail.gpx';a.click()};
 if(API)fetch(API+'/api/cells').then(function(r){return r.json()}).catch(function(){}); /* aggregated cells only; readings stay server-side */
 if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))navigator.serviceWorker.register('sw.js').catch(function(){});
-window.addEventListener('resize',function(){map.invalidateSize()});text();refresh();$('onb_ok').onclick=function(){LS.nb_onb=1;$('onb').close()};if(!LS.nb_onb&&$('onb').showModal&&location.hash.indexOf('noonb')<0)$('onb').showModal();var tab=location.hash.slice(1).split('@')[0].split(',')[0];if(['report','sos','hike'].indexOf(tab)>=0)document.querySelector('#nav button[data-s="'+tab+'"]').click();
+window.addEventListener('resize',function(){map.invalidateSize()});text();if(LS.nb_car)$('carrier').value=LS.nb_car;if(LS.nb_rcar)$('r_carrier').value=LS.nb_rcar;if(!/#.*,.*,/.test(location.hash)&&LS.nb_view){try{var v=JSON.parse(LS.nb_view);map.setView([v.lat,v.lon],v.z)}catch(e){}}map.on('moveend',function(){var c=map.getCenter();LS.nb_view=JSON.stringify({lat:+c.lat.toFixed(4),lon:+c.lng.toFixed(4),z:map.getZoom()})});refresh();$('onb_ok').onclick=function(){LS.nb_onb=1;$('onb').close()};if(!LS.nb_onb&&$('onb').showModal&&location.hash.indexOf('noonb')<0)$('onb').showModal();var tab=location.hash.slice(1).split('@')[0].split(',')[0];if(['report','sos','hike'].indexOf(tab)>=0)document.querySelector('#nav button[data-s="'+tab+'"]').click();
 })();
