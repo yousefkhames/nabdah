@@ -43,7 +43,7 @@ function ltr(s){return '<bdi dir="ltr">'+s+'</bdi>'}
 var deadOnly=false;var DEMO=seed(), mine=JSON.parse(LS.nb_mine||'[]'), remote=null, pos=null, cells=[];
 function all(){return DEMO.concat(mine,remote||[])}
 function refresh(){cells=C.aggregate(all(),{carrier:$('carrier').value});if(deadOnly)cells=cells.filter(function(c){return c.avg<1.5});draw();here();if(window.summ)summ();sos()}
-var map=L.map('map',{zoomControl:false}).setView([30.9,29.8],8);
+var map=L.map('map',{zoomControl:false,preferCanvas:true}).setView([30.9,29.8],8);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap',maxZoom:18}).addTo(map);
 L.control.zoom({position:'bottomright'}).addTo(map);var layer=L.layerGroup().addTo(map),me=null;
 function popup(c,b){var l=TT(),cs=Object.keys(c.carriers).map(function(k){return k+' '+nf(c.carriers[k])}).join(' | ');
@@ -126,6 +126,6 @@ $('im_file').onchange=function(e){var f=e.target.files[0];if(!f)return;var rd=ne
 $('wipe').onclick=function(){if(confirm(TT().wipeQ)){mine=[];LS.removeItem('nb_mine');LS.removeItem('nb_track');LS.removeItem('nb_q');track=[];refresh();myList();hs();toast(TT().deleted)}};
 $('h_dl').onclick=function(){if(!track.length)return;var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([C.toGPX(track,'Nabdah trail')],{type:'application/gpx+xml'}));a.download='nabdah-trail.gpx';a.click()};
 if(API)fetch(API+'/api/cells').then(function(r){return r.json()}).catch(function(){}); /* aggregated cells only; readings stay server-side */
-if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(function(){});
+if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))navigator.serviceWorker.register('sw.js').catch(function(){});
 text();refresh();var tab=location.hash.slice(1).split('@')[0].split(',')[0];if(['report','sos','hike'].indexOf(tab)>=0)document.querySelector('#nav button[data-s="'+tab+'"]').click();
 })();
