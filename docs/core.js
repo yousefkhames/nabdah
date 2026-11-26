@@ -66,9 +66,9 @@
     return best;
   }
   /* Signal at a point: use the closest cell within 400 m. */
-  function signalAt(pos, cells) {
-    var best = null;
-    cells.forEach(function (c) { var d = dist(pos, c); if (d <= 400 && (!best || d < best.d)) best = { cell: c, d: d }; });
+  function signalAt(pos, cells, radius) {
+    var best = null; radius = radius || 400;
+    cells.forEach(function (c) { var d = dist(pos, c); if (d <= radius && (!best || d < best.d)) best = { cell: c, d: d }; });
     return best;
   }
   function toGPX(track, name) {
@@ -86,6 +86,32 @@
     }
     return Math.round(best);
   }
-  return { CELL: CELL, snap: snap, cellKey: cellKey, dist: dist, bearing: bearing, compass: compass, CARRIERS: CARRIERS,
+  /* Parse GPX text into [{lat,lon}] (trkpt, rtept, wpt). Works in browser and Node (regex, no DOM needed). */
+  function parseGPX(txt) {
+    var pts = [], re = /<(?:trkpt|rtept)\b[^>]*>/g, m;
+    while ((m = re.exec(txt))) {
+      var la = /lat\s*=\s*["']([-\d.eE]+)["']/.exec(m[0]), lo = /lon\s*=\s*["']([-\d.eE]+)["']/.exec(m[0]);
+      if (la && lo && isFinite(+la[1]) && isFinite(+lo[1])) pts.push({ lat: +la[1], lon: +lo[1] });
+    }
+    return pts;
+  }
+  /* Resample a route every `step` metres and read signal at each sample. */
+  function routeCoverage(route, cells, step) {
+    step = step || 250; var out = [], carry = 0;
+    function push(p) { var s = signalAt(p, cells, 1200); out.push({ lat: p.lat, lon: p.lon, lvl: s ? Math.round(s.cell.avg) : null }); }
+    if (!route.length) return { samples: [], total: 0, covered: 0, unknown: 0, dead: 0, longestDead: 0 };
+    push(route[0]);
+    for (var i = 1; i < route.length; i++) {
+      var a = route[i - 1], b = route[i], d = dist(a, b), pos = step - carry;
+      while (pos <= d) { var f = pos / d; push({ lat: a.lat + (b.lat - a.lat) * f, lon: a.lon + (b.lon - a.lon) * f }); pos += step; }
+      carry = d - (pos - step);
+    }
+    var cov = 0, unk = 0, dead = 0, run = 0, longest = 0;
+    out.forEach(function (s) {
+      if (s.lvl === null) { unk++; run = 0; } else if (s.lvl === 0) { dead++; run++; longest = Math.max(longest, run); } else { cov++; run = 0; }
+    });
+    return { samples: out, total: out.length, covered: cov, unknown: unk, dead: dead, longestDead: longest * step };
+  }
+  return { parseGPX: parseGPX, routeCoverage: routeCoverage, CELL: CELL, snap: snap, cellKey: cellKey, dist: dist, bearing: bearing, compass: compass, CARRIERS: CARRIERS,
     cleanReading: cleanReading, aggregate: aggregate, nearestSignal: nearestSignal, signalAt: signalAt, toGPX: toGPX, deadStretch: deadStretch };
 });

@@ -18,3 +18,11 @@ const s = createServer().listen(0, async () => {
   x = await fetch(base + '/api/readings', { method: 'POST', body: 'nope' }); assert.strictEqual(x.status, 400);
   console.log('all tests passed'); s.close(); process.exit(0);
 });
+// route coverage
+(function(){
+  const gpx='<gpx><trk><trkseg><trkpt lat="31.20" lon="29.90"></trkpt><trkpt lat="31.30" lon="29.90"></trkpt></trkseg></trk></gpx>';
+  const pts=core.parseGPX(gpx); assert.strictEqual(pts.length,2);
+  const t=new Date().toISOString(); const cs=core.aggregate([{lat:31.2,lon:29.9,bars:3,carrier:'WE',t},{lat:31.25,lon:29.9,bars:0,carrier:'WE',t}],{});
+  const r=core.routeCoverage(pts,cs,250); assert.ok(r.total>40&&r.covered>=1&&r.dead>=1&&r.unknown>0);
+  assert.strictEqual(core.parseGPX('<x/>').length,0); console.log('route tests passed');
+})();
