@@ -3,3 +3,5 @@ server/data.json
 shot-*.png
 .push.sh
 shot.sh
+e2e.js
+t

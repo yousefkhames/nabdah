@@ -9,7 +9,7 @@ var T={ar:{sub:'خريطة تغطية الشبكة من الناس، للطوا�
  hh:'تسجيل مسار رحلة',hp:'سجّل مسارك وقوة الشبكة على طول الطريق. شغال من غير نت والبيانات بتتخزن على موبايلك.',start:'ابدأ',stop:'وقف',dl:'نزّل GPX',hc:'قوة الإشارة الحالية (اضغط لتسجيلها)',
  hs:function(n,d){return nf(n)+' نقطة | أطول مسافة بدون شبكة: '+dm(d)},hn:'الموقع بيتسجل طول ما الصفحة مفتوحة. المتصفح بيوقف الـ GPS لما الشاشة تتقفل، فسيبها شغالة.',
  tips:'اتفق مع حد على ميعاد رجوع. نزّل خريطة أوفلاين. وفّر البطارية. الشبكة غالباً أحسن على القمم والأماكن المفتوحة.',
- sent:'اتسجل، شكراً ليك!',hasSig:'عندك إشارة. اتصل بـ 112 دلوقتي',noSig:'مفيش إشارة عندك. امشي ناحية أقرب إشارة',walk:'مشي حوالي',min:'دقيقة',nav:'اتجاهات',none:'مفيش مكان معروف فيه شبكة قريب. سجّل لو عندك.',copied:'اتنسخت الرسالة',unk:'مفيش بيانات عن المكان ده. جرّب تتصل بـ 112 على أي حال',nodata:'مفيش تسجيلات هنا',share:'شارك',locFail:'مش قادر أحدد مكانك. فعّل خدمة الموقع وجرّب تاني.',demo:'بيانات تجريبية للعرض فقط',cnt:'تسجيل',avg:'متوسط'},
+ sent:'اتسجل، شكراً ليك!',updated:'اتحدّث تسجيلك لنفس المكان النهاردة',pick:'اختار قوة الإشارة الأول',mine:'تسجيلاتي',del:'امسح',nomine:'لسه ما سجلتش حاجة.',deleted:'اتمسح',hasSig:'عندك إشارة. اتصل بـ 112 دلوقتي',noSig:'مفيش إشارة عندك. امشي ناحية أقرب إشارة',walk:'مشي حوالي',min:'دقيقة',nav:'اتجاهات',none:'مفيش مكان معروف فيه شبكة قريب. سجّل لو عندك.',copied:'اتنسخت الرسالة',unk:'مفيش بيانات عن المكان ده. جرّب تتصل بـ 112 على أي حال',nodata:'مفيش تسجيلات هنا',share:'شارك',locFail:'مش قادر أحدد مكانك. فعّل خدمة الموقع وجرّب تاني.',demo:'بيانات تجريبية للعرض فقط',cnt:'تسجيل',avg:'متوسط'},
 en:{sub:'Crowdsourced network coverage for emergencies and hiking',map:'Map',report:'Report',sos:'Emergency',hike:'Trail',
  all:'All carriers',here:'You: ',nosig:'No signal',locate:'Locate me',leg:['No service','Weak','Fair','Good','Excellent'],
  rh:'Report signal here',rb:'Signal strength now',rc:'Carrier',rn:'Network',rw:'Where',out:['Outdoors','Inside a building'],nets:['None','Emergency only (SOS)','2G','3G','4G','5G'],
@@ -19,7 +19,7 @@ en:{sub:'Crowdsourced network coverage for emergencies and hiking',map:'Map',rep
  hh:'Record a trail',hp:'Log your route and signal along the way. Works offline, stored on your phone.',start:'Start',stop:'Stop',dl:'Download GPX',hc:'Current signal (tap to log it)',
  hs:function(n,d){return n+' points | longest dead stretch: '+dm(d)},hn:'Location logs while the page is open. Browsers pause GPS when the screen locks.',
  tips:'Agree a return time with someone. Download an offline map. Save battery. Signal is usually better on ridges and open lines of sight.',
- sent:'Saved. Thank you!',hasSig:'You have signal. Call 112 now',noSig:'No signal here. Walk toward the nearest signal',walk:'about',min:'min walk',nav:'Directions',none:'No known signal nearby. Report one if you have it.',copied:'Message copied',unk:'No data for this spot. Try calling 112 anyway',nodata:'No reports here',share:'Share',locFail:'Could not get your location. Turn on location.',demo:'Demo data for showcase',cnt:'reports',avg:'avg'}};
+ sent:'Saved. Thank you!',updated:'Updated your report for this spot today',pick:'Pick a signal strength first',mine:'My reports',del:'Delete',nomine:'No reports yet.',deleted:'Deleted',hasSig:'You have signal. Call 112 now',noSig:'No signal here. Walk toward the nearest signal',walk:'about',min:'min walk',nav:'Directions',none:'No known signal nearby. Report one if you have it.',copied:'Message copied',unk:'No data for this spot. Try calling 112 anyway',nodata:'No reports here',share:'Share',locFail:'Could not get your location. Turn on location.',demo:'Demo data for showcase',cnt:'reports',avg:'avg'}};
 var lang=LS.nb_lang||'ar', TT=function(){return T[lang]};
 var COL=['#ff5d5d','#ff9f43','#f4d35e','#9be564','#2ee6a6'];
 function $(i){return document.getElementById(i)}
@@ -62,9 +62,9 @@ function labels(){['bars','h_bars'].forEach(function(id){[].forEach.call($(id).c
 function fillSel(id,arr,keep){var e=$(id),v=e.value;e.innerHTML='';arr.forEach(function(x,i){var o=document.createElement('option');o.value=x[0];o.textContent=x[1];e.appendChild(o)});if(keep&&v)e.value=v}
 function text(){var l=TT();$('t_sub').textContent=l.sub;var nb=document.querySelectorAll('#nav .tl');['map','report','sos','hike'].forEach(function(k,i){nb[i].textContent=l[k]});$('skip').textContent=lang==='ar'?'تخطي للمحتوى':'Skip to content';$('fab').setAttribute('aria-label',l.locate);
  fillSel('carrier',[['all',l.all]].concat(C.CARRIERS.map(function(c){return[c,c]})),1);fillSel('r_carrier',C.CARRIERS.map(function(c){return[c,c]}),1);
- fillSel('r_nettype',l.nets.map(function(n,i){return[['none','sos','2G','3G','4G','5G'][i],n]}),1);if(!$('r_nettype').dataset.i){$('r_nettype').value='4G';$('r_nettype').dataset.i=1}fillSel('r_out',[['1',l.out[0]],['0',l.out[1]]],1);
+ fillSel('r_nettype',l.nets.map(function(n,i){return[['none','sos','2G','3G','4G','5G'][i],n]}),1);if(!$('r_nettype').dataset.i){$('r_nettype').value=guessNet()||'4G';$('r_nettype').dataset.i=1}fillSel('r_out',[['1',l.out[0]],['0',l.out[1]]],1);
  $('r_h').textContent=l.rh;$('r_bars').textContent=l.rb;$('r_car').textContent=l.rc;$('r_net').textContent=l.rn;$('r_where').textContent=l.rw;$('send').textContent=l.send;$('r_priv').textContent=l.priv;
- $('s_h').textContent=l.sh;$('s_near').textContent=l.near;$('s_go').textContent=l.go;$('s_msg_h').textContent=l.mh;$('s_copy').textContent=l.copy;$('s_share').textContent=l.share;$('s_sms').textContent=l.sms;$('s_note').textContent=l.note;$('s_num').textContent=l.num;
+ $('s_h').textContent=l.sh;myList();$('s_near').textContent=l.near;$('s_go').textContent=l.go;$('s_msg_h').textContent=l.mh;$('s_copy').textContent=l.copy;$('s_share').textContent=l.share;$('s_sms').textContent=l.sms;$('s_note').textContent=l.note;$('s_num').textContent=l.num;
  $('h_h').textContent=l.hh;$('h_p').textContent=l.hp;$('h_start').textContent=rec?l.stop:l.start;$('h_dl').textContent=l.dl;$('h_cur').textContent=l.hc;$('h_note').textContent=l.hn;$('h_tips').textContent=l.tips.split('.')[0];$('h_tiplist').textContent=l.tips;
  $('legend').innerHTML=l.leg.map(function(t,i){return'<div><i style="background:'+COL[i]+'"></i>'+t+'</div>'}).join('')+'<div class="mut">'+l.demo+'</div>';
  document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';$('lang').textContent=lang==='ar'?'EN':'ع';$('t_title').firstChild.textContent=lang==='ar'?'نبضة':'Nabdah';labels();upPos();hs();here();sos()}
@@ -74,8 +74,16 @@ document.querySelectorAll('#nav button').forEach(function(b){b.onclick=function(
  if(b.dataset.s==='map')setTimeout(function(){map.invalidateSize()},50);if(b.dataset.s==='report'||b.dataset.s==='sos')locate(false)}});
 $('carrier').onchange=refresh;
 mkBars('bars',function(i){cur=i;labels()});
-$('send').onclick=function(){if(!pos){locate(false);toast(TT().locFail);return}if(cur<0)return;var r=C.cleanReading({lat:pos.lat,lon:pos.lon,bars:cur,carrier:$('r_carrier').value,net:cur===0?($('r_nettype').value==='sos'?'sos':'none'):$('r_nettype').value,outdoor:$('r_out').value==='1'});
- mine.push(r);LS.nb_mine=JSON.stringify(mine);queue(r);refresh();toast(TT().sent);cur=-1;labels()};
+$('send').onclick=function(){if(!pos){locate(false);toast(TT().locFail);return}if(cur<0){toast(TT().pick);$('bars').firstChild.focus();return}
+ var r=C.cleanReading({lat:pos.lat,lon:pos.lon,bars:cur,carrier:$('r_carrier').value,net:cur===0?($('r_nettype').value==='sos'?'sos':'none'):$('r_nettype').value,outdoor:$('r_out').value==='1'});
+ var k=C.cellKey(r.lat,r.lon),dup=mine.findIndex(function(x){return C.cellKey(x.lat,x.lon)===k&&x.carrier===r.carrier&&x.t===r.t});
+ if(dup>=0)mine.splice(dup,1);
+ mine.push(r);LS.nb_mine=JSON.stringify(mine);queue(r);refresh();toast(dup>=0?TT().updated:TT().sent);cur=-1;labels();myList()};
+function myList(){var el=$('my_list'),l=TT();if(!el)return;var m=mine.slice(-5).reverse();$('my_h').textContent=l.mine+' ('+nf(mine.length)+')';
+ el.innerHTML=m.length?m.map(function(r){var i=mine.indexOf(r);return '<li><span>'+barsSvg(r.bars)+'</span><span style="flex:1"> '+l.leg[r.bars]+' | '+r.carrier+'<br><span class="mut">'+ltr(r.t)+'</span></span><button class="btn alt sm" data-i="'+i+'" aria-label="'+l.del+'">&#10005;</button></li>'}).join(''):'<li class="mut">'+l.nomine+'</li>';
+ [].forEach.call(el.querySelectorAll('button'),function(b){b.onclick=function(){mine.splice(+b.dataset.i,1);LS.nb_mine=JSON.stringify(mine);refresh();myList();toast(TT().deleted)}})}
+/* auto-detect network type hint */
+var cn=navigator.connection||navigator.mozConnection;function guessNet(){if(!cn||!cn.effectiveType)return null;var m={'slow-2g':'2G','2g':'2G','3g':'3G','4g':'4G'};return m[cn.effectiveType]||null}
 function queue(r){if(!API)return;var q=JSON.parse(LS.nb_q||'[]');q.push(r);LS.nb_q=JSON.stringify(q);flush()}
 function flush(){if(!API||!navigator.onLine)return;var q=JSON.parse(LS.nb_q||'[]');if(!q.length)return;fetch(API+'/api/readings',{method:'POST',body:JSON.stringify(q)}).then(function(r){if(r.ok)LS.nb_q='[]'}).catch(function(){})}
 window.addEventListener('online',flush);
